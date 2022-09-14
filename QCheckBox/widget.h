@@ -6,6 +6,7 @@
 class QCheckBox;
 class QButtonGroup;
 class QLabel;
+class QGroupBox;
 
 class Widget : public QWidget
 {

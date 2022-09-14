@@ -10,6 +10,5 @@ int main(int argc, char *argv[])
     tb->setSource(QUrl("index.html"));
     tb->show();
 
-
     return a.exec();
 }

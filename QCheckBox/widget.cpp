@@ -4,6 +4,7 @@
 #include <QLabel>
 #include <QString>
 
+
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
 {
