@@ -22,8 +22,8 @@ Widget::Widget(QWidget *parent) : QWidget(parent)
     label->setObjectName("label1");
     label->setFrameStyle(QFrame::StyledPanel);
 
-
-
+    QButtonGroup* buttonGroup = new QButtonGroup(this);
+    connect(buttonGroup, SIGNAL(idClicked(int)), SLOT(click(int)));
     QGridLayout* gridButton = new QGridLayout;
     QPushButton* button[16];
     for(int y=0; y<WIDTH; y++)
@@ -32,47 +32,21 @@ Widget::Widget(QWidget *parent) : QWidget(parent)
         {
             button[x+y*WIDTH] = new QPushButton(str[x+y*WIDTH]);
             gridButton->addWidget(button[x+y*WIDTH], y, x);
+            buttonGroup->addButton(button[x+y*WIDTH],x+y*WIDTH);
         }
     }
     gridButton->setSpacing(20);
 
-//버튼->번호
-    connect(button[12],SIGNAL(clicked()), SLOT(numButton()));
-    connect(button[8],SIGNAL(clicked()), SLOT(numButton()));
-    connect(button[9],SIGNAL(clicked()), SLOT(numButton()));
-    connect(button[10],SIGNAL(clicked()), SLOT(numButton()));
-    connect(button[4],SIGNAL(clicked()), SLOT(numButton()));
-    connect(button[5],SIGNAL(clicked()), SLOT(numButton()));
-    connect(button[6],SIGNAL(clicked()), SLOT(numButton()));
-    connect(button[0],SIGNAL(clicked()), SLOT(numButton()));
-    connect(button[1],SIGNAL(clicked()), SLOT(numButton()));
-    connect(button[2],SIGNAL(clicked()), SLOT(numButton()));
-//버튼->연산자
-    connect(button[13], &QPushButton::clicked, [=](){ label->setText("0"); });
-    connect(button[15],SIGNAL(clicked()), SLOT(opButton()));
-    connect(button[11],SIGNAL(clicked()), SLOT(opButton()));
-    connect(button[7],SIGNAL(clicked()), SLOT(opButton()));
-    connect(button[3],SIGNAL(clicked()), SLOT(opButton()));
-    connect(button[14], &QPushButton::clicked,
-            [=](){
-        double result = 0;
-        if(op == "+"){
-            result = num.toDouble() + label->text().toDouble();
-        } else if(op == "-"){
-            result = num.toDouble() - label->text().toDouble();
-        } else if(op == "x"){
-            result = num.toDouble() * label->text().toDouble();
-        } else if(op == "/"){
-            result = num.toDouble() / label->text().toDouble();
-        }
-        label->setText(QString::number(result));
-    });
 
     QVBoxLayout* vBox = new QVBoxLayout(this);
     vBox->setSpacing(10);
     vBox->addWidget(label);
     vBox->addLayout(gridButton);
     setLayout(vBox);
+
+
+
+
 }
 
 Widget::~Widget()
@@ -103,3 +77,34 @@ void Widget::opButton()
     }
 }
 
+void Widget::click(int id)
+{
+    double result = 0;
+    QPushButton* clickButton = (QPushButton*)((QButtonGroup*)sender())->button(id);
+    QString str = clickButton->text();
+    switch(id){
+    case 0: case 1: case 2: case 4: case 5: case 6: case 8: case 9: case 10: case 12:
+        label->setText((label->text()=="0")?(str):(str+label->text()));
+        break;
+    case 3: case 7: case 11: case 15:
+        num = label->text();
+        op = clickButton->text();
+        label->setText("0");
+        break;
+    case 13:
+        label->setText("0");
+        break;
+    case 14:
+        if(op == "+"){
+            result = num.toDouble() + label->text().toDouble();
+        } else if(op == "-"){
+            result = num.toDouble() - label->text().toDouble();
+        } else if(op == "x"){
+            result = num.toDouble() * label->text().toDouble();
+        } else if(op == "/"){
+            result = num.toDouble() / label->text().toDouble();
+        }
+        label->setText(QString::number(result));
+        break;
+    }
+}
