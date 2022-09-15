@@ -6,14 +6,15 @@
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
 {
-    //QLabel* label = new QLabel("IP Address", this);
+    QLabel* label = new QLabel("&IP Address", this);
     QDial* dial1 = new QDial(this);
     QDial* dial2 = new QDial(this);
 
     QSplitter* splitter = new QSplitter(this);
-    //splitter->addWidget(label);
+    splitter->addWidget(label);
     splitter->addWidget(dial1);
     splitter->addWidget(dial2);
+    label->setBuddy(dial1);
 
     resize(splitter->sizeHint());
 }
