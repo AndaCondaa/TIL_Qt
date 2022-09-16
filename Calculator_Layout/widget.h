@@ -17,10 +17,10 @@ public:
 private:
     QLabel* label;
     QString num, op;
-    QButtonGroup* buttonGroup;
 
 public slots:
     void numButton();
     void opButton();
+    void click(int id);
 };
 #endif // WIDGET_H
