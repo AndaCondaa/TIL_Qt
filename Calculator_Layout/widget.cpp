@@ -36,6 +36,8 @@ Widget::Widget(QWidget *parent) : QWidget(parent)
     }
     gridButton->setSpacing(20);
 
+
+
 //버튼->번호
     connect(button[12],SIGNAL(clicked()), SLOT(numButton()));
     connect(button[8],SIGNAL(clicked()), SLOT(numButton()));
