@@ -14,6 +14,7 @@
 #include <QMdiSubWindow>
 #include <QFileDialog>
 #include <QDebug>
+#include <QMessageBox>
 
 QtEditor::QtEditor(QWidget *parent)
     : QMainWindow(parent)
@@ -32,18 +33,12 @@ QtEditor::QtEditor(QWidget *parent)
     setMenuBar(menubar);
 
 //액션 생성 in fileMenu
-    QAction* newAct = makeAction("new.png","&New",tr("Ctrl+N"),
-                                 "Make new file", this, SLOT(newFile()));
-    QAction* openAct = makeAction("open.png","&Open",tr("Ctrl+O"),
-                                  "Open new file", this, SLOT(openFile()));
-    QAction* saveAct = makeAction("save.png", "&Save", tr("Ctrl+S"),
-                                  "Save this file", this, SLOT(saveFile()));
-    QAction* saveAsAct = makeAction("", "&Save As", QKeySequence::SaveAs,
-                                    "Save this file", this, SLOT(saveAsFile()));
-    QAction* printAct = makeAction("", "&Print", tr("Ctrl+P"),
-                                   "Print", this, SLOT(printFile()));
-    QAction* quitAct = makeAction("quit.png","&Quit",tr("Ctrl+Q"),
-                                  "Quit this program", qApp, SLOT(quit()));
+    QAction* newAct = makeAction("new.png","&New",tr("Ctrl+N"), "Make new file", this, SLOT(newFile()));
+    QAction* openAct = makeAction("open.png","&Open",tr("Ctrl+O"), "Open new file", this, SLOT(openFile()));
+    QAction* saveAct = makeAction("save.png", "&Save", tr("Ctrl+S"), "Save this file", this, SLOT(saveFile()));
+    QAction* saveAsAct = makeAction("", "&Save As", QKeySequence::SaveAs, "Save this file", this, SLOT(saveAsFile()));
+    QAction* printAct = makeAction("", "&Print", tr("Ctrl+P"), "Print", this, SLOT(printFile()));
+    QAction* quitAct = makeAction("quit.png","&Quit",tr("Ctrl+Q"), "Quit this program", qApp, SLOT(quit()));
 
 //fileMenu 생성 및 액션추가
     QMenu* fileMenu = menubar->addMenu("&File");
@@ -69,11 +64,9 @@ QtEditor::QtEditor(QWidget *parent)
 
 //ToolBar에 위젯 추가
     QFontComboBox* fontComboBox = new QFontComboBox(this);
-    connect(fontComboBox, SIGNAL(currentFontChanged(QFont)),
-            textEdit, SLOT(setCurrentFont(QFont)));
+    connect(fontComboBox, SIGNAL(currentFontChanged(QFont)), textEdit, SLOT(setCurrentFont(QFont)));
     QDoubleSpinBox* sizeSpinBox = new QDoubleSpinBox(this);
-    connect(sizeSpinBox, SIGNAL(valueChanged(double)),
-            textEdit, SLOT(setFontPointSize(qreal)));
+    connect(sizeSpinBox, SIGNAL(valueChanged(double)), textEdit, SLOT(setFontPointSize(qreal)));
 
     addToolBarBreak();
 
@@ -90,24 +83,32 @@ QtEditor::QtEditor(QWidget *parent)
     statusbar->showMessage("started",1500);
 
 //Edit 액션 추가
-    QAction* clear= makeAction("","&Clear", tr("Ctrl+d"),
-                             "UNDO!", this, SLOT(editText()));
-    QAction* undo = makeAction("","&Undo", tr("Ctrl+z"),
-                               "UNDO!", this, SLOT(editText()));
-     QAction* redo = makeAction("","&Redo", QKeySequence::Redo,
-                                "REDO!", this, SLOT(editText()));
-     QAction* copy = makeAction("","&Copy", QKeySequence::Copy,
-                                "카피!", this, SLOT(editText()));
-     QAction* cut = makeAction("","&Cut", QKeySequence::Cut,
-                               "껐뜨!", this, SLOT(editText()));
-    QAction* paste = makeAction("","&Paste", QKeySequence::Paste,
-                               "붙여넣자!", this, SLOT(editText()));
-    QAction* zoomIn = makeAction("","&zoomIn", QKeySequence::ZoomIn,
-                               "커져라!", this, SLOT(editText()));
-    QAction* zoomOut = makeAction("","&zoomOut", QKeySequence::ZoomOut,
-                               "작아져라!", this, SLOT(editText()));
+//    QAction* clear= makeAction("","&Clear", tr("Ctrl+d"),
+//                               "UNDO!", this, SLOT(clear()));
+//    QAction* undo = makeAction("","&Undo", tr("Ctrl+z"),
+//                               "UNDO!", this, SLOT(undo()));
+//    QAction* redo = makeAction("","&Redo", QKeySequence::Redo,
+//                               "REDO!", this, SLOT(redo()));
+//    QAction* copy = makeAction("","&Copy", QKeySequence::Copy,
+//                               "카피!", this, SLOT(copy()));
+//    QAction* cut = makeAction("","&Cut", QKeySequence::Cut,
+//                              "껐뜨!", this, SLOT(cut()));
+//    QAction* paste = makeAction("","&Paste", QKeySequence::Paste,
+//                                "붙여넣자!", this, SLOT(paste()));
+//    QAction* zoomIn = makeAction("","&zoomIn", QKeySequence::ZoomIn,
+//                                 "커져라!", this, SLOT(zoomIn()));
+//    QAction* zoomOut = makeAction("","&zoomOut", QKeySequence::ZoomOut,
+//                                  "작아져라!", this, SLOT(zoomOut()));
+    QAction* clear = new QAction("&Clear", this);
+    QAction* undo = new QAction("&Undo", this);
+    QAction* redo = new QAction("&Redo", this);
+    QAction* copy = new QAction("&Copy", this);
+    QAction* cut = new QAction("&Cut", this);
+    QAction* paste = new QAction("&Paste", this);
+    QAction* zoomIn = new QAction("&zoomIn", this);
+    QAction* zoomOut = new QAction("&zoomOut", this);
 
-//Edit 메뉴
+//Edit 메뉴 추가
     QMenu* edit = menubar->addMenu("&Edit");
     edit->addAction(clear);
     edit->addSeparator();
@@ -151,18 +152,46 @@ QtEditor::QtEditor(QWidget *parent)
 
     formatToolbar->addAction(dock->toggleViewAction());
 
-//    connect(mdiArea, SIGNAL(subWindowActivated(QMdiSubWindow*)),\
-//            SLOT(connectWindow(QMdiSubWindow*)));
+//QList에 액션 추가
+    actions.append(clear);
+    actions.append(undo);
+    actions.append(redo);
+    actions.append(copy);
+    actions.append(cut);
+    actions.append(paste);
+    actions.append(zoomIn);
+    actions.append(zoomOut);
 
-////액션 저장
-//    actions.append(clear);
-//    actions.append(undo);
-//    actions.append(redo);
-//    actions.append(copy);
-//    actions.append(cut);
-//    actions.append(paste);
-//    actions.append(zoomIn);
-//    actions.append(zoomOut);
+    connect(mdiArea, SIGNAL(subWindowActivated(QMdiSubWindow*)),
+            SLOT(connectWindow(QMdiSubWindow*)));
+
+//QMessageBox 클래스
+    QMenu* help = menubar->addMenu("&Help");
+    QAction* about = help->addAction("&About");
+    QAction* aboutqt = help->addAction("&Aboutqqqqq");
+    connect(about, SIGNAL(triggered()), this, SLOT(aboutBox()));
+    connect(aboutqt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+
+//Window메뉴
+    QMenu* window = menubar->addMenu("&Window");
+    QAction* nextWindow = makeAction("", "&Next",
+                                     "Ctrl+]", "다음 창!", mdiArea, SLOT(activateNextSubWindow()));
+    QAction* prevWindow = makeAction("", "&Prev",
+                                     "Ctrl+[", "이전 창!", mdiArea, SLOT(activatePreviousSubWindow()));
+    QAction* cascadeWindow = makeAction("", "&Cascade",
+                                     "", "정렬!", mdiArea, SLOT(cascadeSubWindows()));
+    QAction* closeActWindow = makeAction("", "&CloseAct",
+                                     "", "closeAct!", mdiArea, SLOT(closeActiveSubWindow()));
+    QAction* closeAllWindow = makeAction("", "&CloseAll",
+                                     "", "closeAll!", mdiArea, SLOT(closeAllSubWindows()));
+    QAction* tileWindow = makeAction("", "&CloseAct",
+                                     "", "closeAct!", mdiArea, SLOT(tileSubWindows()));
+    window->addAction(nextWindow);
+    window->addAction(prevWindow);
+    window->addAction(cascadeWindow);
+    window->addAction(closeActWindow);
+    window->addAction(closeAllWindow);
+    window->addAction(tileWindow);
 }
 
 QtEditor::~QtEditor()
@@ -227,7 +256,8 @@ QAction *QtEditor::makeAction(QString icon, QString text, \
     icon = ":/images/" + icon;
     if(icon.length( ))
         act->setIcon(QIcon(icon));
-    act->setShortcut(shortCut);
+    QKeySequence keySequence(shortCut);
+    act->setShortcut(keySequence);
     act->setStatusTip(toolTip);
     connect(act, SIGNAL(triggered( )), recv, slot);
     return act;
@@ -250,13 +280,12 @@ void QtEditor::alignText()
         textEdit->setAlignment(Qt::AlignJustify);
 }
 
+/*
 void QtEditor::editText()
 {
     QMdiSubWindow* subWindow = mdiArea->currentSubWindow();
     QTextEdit* textEdit = dynamic_cast<QTextEdit*>(subWindow->widget());
-
     QAction *action = qobject_cast<QAction*>(sender());
-
 
     if(action->text().contains("clear",Qt::CaseInsensitive))
         textEdit->clear();
@@ -274,10 +303,10 @@ void QtEditor::editText()
         textEdit->zoomIn();
     else if (action->text().contains("zoomOut",Qt::CaseInsensitive))
         textEdit->zoomOut();
-}
+}*/
 
-//void QtEditor::connectWindow(QMdiSubWindow* actWin)
-//{
+void QtEditor::connectWindow(QMdiSubWindow* actWin)
+{
 //    QTextEdit* newEdit = qobject_cast<QTextEdit*>(actWin->widget());
 //    //기존 해제
 //    if (prevEdit != nullptr)
@@ -296,4 +325,36 @@ void QtEditor::editText()
 //    }
 
 //    prevEdit = newEdit;
-//}
+
+    if(actWin == nullptr) {		// 모든 창이 닫혔을 때
+        prevEdit = nullptr;     // prevTextEdit 변수에 저장한 창이 닫히므로 nullptr로 초기화
+    } else {				// 창이 열려 있을 때
+        QTextEdit *textEdit = qobject_cast<QTextEdit*>(actWin->widget( ));
+        /* 모든 QAction에 연결된 슬롯 해제 */
+        if(prevEdit != nullptr) {
+            Q_FOREACH(QAction *action, actions)
+                action->disconnect(prevEdit);
+        }
+        prevEdit = textEdit;			/* 현재 객체를 다음 처리를 위해 저장 */
+
+        // 슬롯들을 위한 배열
+        const char *methods[7] = {
+            SLOT(undo( )), SLOT(redo( )), SLOT(copy( )), SLOT(cut( )),
+            SLOT(paste( )), SLOT(zoomIn( )), SLOT(zoomOut( ))
+        };
+
+        /* QAction에 현재 선택된 객체의 슬롯을 연결 */
+        int cnt = 0;
+        Q_FOREACH(QAction *action, actions) {
+            connect(action, SIGNAL(triggered( )), textEdit, methods[cnt++]);
+        }
+    }
+}
+
+void QtEditor::aboutBox()
+{
+    QMessageBox::information(this, "Information",
+                 "infomation contents", QMessageBox::Yes |
+                 QMessageBox::No | QMessageBox::Cancel);
+}
+

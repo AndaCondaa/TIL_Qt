@@ -25,13 +25,15 @@ public slots:
     void printFile();
 
     void alignText();
-    void editText();
-    //void connectWindow(QMdiSubWindow*);
+    //void editText();
+    void connectWindow(QMdiSubWindow*);
+    void aboutBox();
+
 private:
     QLabel* statusLabel;
     QMdiArea* mdiArea;
     QList<QAction*> actions;
-    QTextEdit* prevEdit;
+    QTextEdit* prevEdit = nullptr;
 
     template <typename T>
     QAction* makeAction(QString icon, QString text, T shortCut,
