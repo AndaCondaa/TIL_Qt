@@ -3,8 +3,9 @@
 
 #include <QMainWindow>
 
+class QLabel;
 class QAction;
-class QTextEdit;
+class QMdiArea;
 
 class QtEditor : public QMainWindow
 {
@@ -22,16 +23,18 @@ public slots:
     void printFile();
 
     void alignText();
+    void editText();
 
 private:
-    QTextEdit* textEdit;
+    QLabel* statusLabel;
+    QMdiArea* mdiArea;
+
     template <typename T>
     QAction* makeAction(QString icon, QString text, T shortCut,
-                        QString toolTip, QObject* rect, const char* slot);
+                        QString toolTip, QObject* recv, const char* slot);
 
     template <typename T, typename Functor>
     QAction* makeAction(QString icon, QString text, T shortCut,
                         QString toolTip, Functor lambda);
-
 };
 #endif // QTEDITOR_H

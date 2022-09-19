@@ -9,13 +9,21 @@
 #include <QDoubleSpinBox>
 #include <QStatusBar>
 #include <QLabel>
+#include <QDockWidget>
+#include <QMdiArea>
+#include <QMdiSubWindow>
 
 QtEditor::QtEditor(QWidget *parent)
     : QMainWindow(parent)
 {
-//텍스트 에디터 생성
-    textEdit = new QTextEdit(this);
-    setCentralWidget(textEdit);
+    mdiArea = new QMdiArea(this);
+    setCentralWidget(mdiArea);
+#if 1
+    QTextEdit* textEdit = new QTextEdit(this);
+    mdiArea->addSubWindow(textEdit);
+#else
+    newFile();
+#endif
 
 //메뉴바 생성
     QMenuBar* menubar = new QMenuBar(this);
@@ -80,28 +88,25 @@ QtEditor::QtEditor(QWidget *parent)
     statusbar->showMessage("started",1500);
 
 //Edit 액션 추가
-    QAction* append= new QAction("&Append", this);
-    connect(append, SIGNAL(triggered(bool)), textEdit, SLOT(append()));
-    QAction* clear= new QAction("&Clear", this);
-    connect(clear, SIGNAL(triggered(bool)), textEdit, SLOT(clear()));
+    QAction* clear= makeAction("","&Clear", tr("Ctrl+d"),
+                             "UNDO!", this, SLOT(editText()));
     QAction* undo = makeAction("","&Undo", tr("Ctrl+z"),
-                              "UNDO!", textEdit, SLOT(undo()));
+                              "UNDO!", this, SLOT(editText()));
     QAction* redo = makeAction("","&Redo", QKeySequence::Redo,
-                               "REDO!", textEdit, SLOT(redo()));
+                               "REDO!", this, SLOT(editText()));
     QAction* copy = makeAction("","&Copy", QKeySequence::Copy,
-                               "카피!", textEdit, SLOT(copy()));
+                               "카피!", this, SLOT(editText()));
     QAction* cut = makeAction("","&Cut", QKeySequence::Cut,
-                               "껐뜨!", textEdit, SLOT(cut()));
+                               "껐뜨!", this, SLOT(editText()));
     QAction* paste = makeAction("","&Paste", QKeySequence::Paste,
-                               "붙여넣자!", textEdit, SLOT(paste()));
+                               "붙여넣자!", this, SLOT(editText()));
     QAction* zoomIn = makeAction("","&zoomIn", QKeySequence::ZoomIn,
-                               "커져라!", textEdit, SLOT(zoomIn()));
+                               "커져라!", this, SLOT(editText()));
     QAction* zoomOut = makeAction("","&zoomOut", QKeySequence::ZoomOut,
-                               "작아져라!", textEdit, SLOT(zoomOut()));
+                               "작아져라!", this, SLOT(editText()));
 
 //Edit 메뉴
     QMenu* edit = menubar->addMenu("&Edit");
-    edit->addAction(append);
     edit->addAction(clear);
     edit->addSeparator();
     edit->addAction(undo);
@@ -132,6 +137,17 @@ QtEditor::QtEditor(QWidget *parent)
     connect(right, SIGNAL(triggered()), SLOT(alignText()));
     connect(justify, SIGNAL(triggered()), SLOT(alignText()));
 
+
+//QDockWidget
+    QLabel* label = new QLabel("Dock Widget",this);
+    QDockWidget* dock = new QDockWidget("Dock Widgettttt",this);
+    //붙일 수 있는 곳 선택 (왼쪽, 오른쪽)
+    dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    //add(초기 위치 설정
+    addDockWidget(Qt::LeftDockWidgetArea,dock);
+    dock->setWidget(label);     //여러 개의 위젯 붙이려면, 사용자 정의 위젯을 만들어서 한번에 올리기
+
+    formatToolbar->addAction(dock->toggleViewAction());
 }
 
 QtEditor::~QtEditor()
@@ -141,7 +157,11 @@ QtEditor::~QtEditor()
 void QtEditor::newFile()
 {
     qDebug("Make New File");
+    QTextEdit* textedit = new QTextEdit;
+    mdiArea->addSubWindow(textedit);
+    textedit->show();
 }
+
 void QtEditor::openFile()
 {
     qDebug("Open New File");
@@ -159,6 +179,23 @@ void QtEditor::printFile()
     qDebug("Print");
 }
 
+template <typename T, typename Functor>
+QAction* QtEditor::makeAction(QString icon, QString text, T shortCut,
+                              QString toolTip, Functor lambda)
+{
+    QAction *act = new QAction(text, this);
+    if(icon.length( ))
+    {
+        icon = ":/images/" + icon;      //리소스 시스템 경로 설정
+         act->setIcon(QIcon(icon));
+    }
+    QKeySequence keySequence(shortCut);
+    act->setShortcut(keySequence);
+    act->setStatusTip(toolTip);
+    act->setToolTip(toolTip);
+    connect(act, &QAction::triggered, this, lambda);
+    return act;
+}
 
 template <typename T>
 QAction *QtEditor::makeAction(QString icon, QString text, \
@@ -166,6 +203,7 @@ QAction *QtEditor::makeAction(QString icon, QString text, \
                               QObject* recv, const char* slot)
 {
     QAction *act = new QAction(text, this);
+    icon = ":/images/" + icon;
     if(icon.length( ))
         act->setIcon(QIcon(icon));
     act->setShortcut(shortCut);
@@ -174,23 +212,11 @@ QAction *QtEditor::makeAction(QString icon, QString text, \
     return act;
 }
 
-template <typename T, typename Functor>
-QAction* QtEditor::makeAction(QString icon, QString text, T shortCut,
-                              QString toolTip, Functor lambda)
-{
-    QAction *act = new QAction(text, this);
-    if(icon.length( ))
-         act->setIcon(QIcon(icon));
-    act->setShortcut(shortCut);
-    act->setStatusTip(toolTip);
-    act->setToolTip(toolTip);
-    connect(act, &QAction::triggered, this, lambda);
-    return act;
-}
-
 void QtEditor::alignText()
 {
     QAction *action = qobject_cast<QAction*>(sender());
+    QMdiSubWindow* subWindow = mdiArea->currentSubWindow();
+    QTextEdit* textEdit = dynamic_cast<QTextEdit*>(subWindow->widget());
     if(action->text().contains("center",Qt::CaseInsensitive))
         textEdit->setAlignment(Qt::AlignCenter);
     else if (action->text().contains("left",Qt::CaseInsensitive))
@@ -201,3 +227,27 @@ void QtEditor::alignText()
         textEdit->setAlignment(Qt::AlignJustify);
 }
 
+void QtEditor::editText()
+{
+    QMdiSubWindow* subWindow = mdiArea->currentSubWindow();
+    QTextEdit* textEdit = dynamic_cast<QTextEdit*>(subWindow->widget());
+
+    QAction *action = qobject_cast<QAction*>(sender());
+
+    if(action->text().contains("clear",Qt::CaseInsensitive))
+        textEdit->clear();
+    else if (action->text().contains("undo",Qt::CaseInsensitive))
+        textEdit->undo();
+    else if (action->text().contains("redo",Qt::CaseInsensitive))
+        textEdit->redo();
+    else if (action->text().contains("copy",Qt::CaseInsensitive))
+        textEdit->copy();
+    else if (action->text().contains("cut",Qt::CaseInsensitive))
+        textEdit->cut();
+    else if (action->text().contains("paste",Qt::CaseInsensitive))
+        textEdit->paste();
+    else if (action->text().contains("zoomIn",Qt::CaseInsensitive))
+        textEdit->zoomIn();
+    else if (action->text().contains("zoomOut",Qt::CaseInsensitive))
+        textEdit->zoomOut();
+}
