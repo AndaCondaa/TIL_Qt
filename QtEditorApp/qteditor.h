@@ -6,6 +6,8 @@
 class QLabel;
 class QAction;
 class QMdiArea;
+class QMdiSubWindow;
+class QTextEdit;
 
 class QtEditor : public QMainWindow
 {
@@ -24,10 +26,12 @@ public slots:
 
     void alignText();
     void editText();
-
+    //void connectWindow(QMdiSubWindow*);
 private:
     QLabel* statusLabel;
     QMdiArea* mdiArea;
+    QList<QAction*> actions;
+    QTextEdit* prevEdit;
 
     template <typename T>
     QAction* makeAction(QString icon, QString text, T shortCut,

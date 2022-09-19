@@ -12,6 +12,8 @@
 #include <QDockWidget>
 #include <QMdiArea>
 #include <QMdiSubWindow>
+#include <QFileDialog>
+#include <QDebug>
 
 QtEditor::QtEditor(QWidget *parent)
     : QMainWindow(parent)
@@ -91,12 +93,12 @@ QtEditor::QtEditor(QWidget *parent)
     QAction* clear= makeAction("","&Clear", tr("Ctrl+d"),
                              "UNDO!", this, SLOT(editText()));
     QAction* undo = makeAction("","&Undo", tr("Ctrl+z"),
-                              "UNDO!", this, SLOT(editText()));
-    QAction* redo = makeAction("","&Redo", QKeySequence::Redo,
-                               "REDO!", this, SLOT(editText()));
-    QAction* copy = makeAction("","&Copy", QKeySequence::Copy,
-                               "카피!", this, SLOT(editText()));
-    QAction* cut = makeAction("","&Cut", QKeySequence::Cut,
+                               "UNDO!", this, SLOT(editText()));
+     QAction* redo = makeAction("","&Redo", QKeySequence::Redo,
+                                "REDO!", this, SLOT(editText()));
+     QAction* copy = makeAction("","&Copy", QKeySequence::Copy,
+                                "카피!", this, SLOT(editText()));
+     QAction* cut = makeAction("","&Cut", QKeySequence::Cut,
                                "껐뜨!", this, SLOT(editText()));
     QAction* paste = makeAction("","&Paste", QKeySequence::Paste,
                                "붙여넣자!", this, SLOT(editText()));
@@ -148,6 +150,19 @@ QtEditor::QtEditor(QWidget *parent)
     dock->setWidget(label);     //여러 개의 위젯 붙이려면, 사용자 정의 위젯을 만들어서 한번에 올리기
 
     formatToolbar->addAction(dock->toggleViewAction());
+
+//    connect(mdiArea, SIGNAL(subWindowActivated(QMdiSubWindow*)),\
+//            SLOT(connectWindow(QMdiSubWindow*)));
+
+////액션 저장
+//    actions.append(clear);
+//    actions.append(undo);
+//    actions.append(redo);
+//    actions.append(copy);
+//    actions.append(cut);
+//    actions.append(paste);
+//    actions.append(zoomIn);
+//    actions.append(zoomOut);
 }
 
 QtEditor::~QtEditor()
@@ -164,15 +179,21 @@ void QtEditor::newFile()
 
 void QtEditor::openFile()
 {
-    qDebug("Open New File");
+    QString filename = QFileDialog::getOpenFileName(this, "Select file to open",
+                                             ".","Text File(*.txt *.html *.c *.cpp *.h)");
+    qDebug() << filename;
 }
 void QtEditor::saveFile()
 {
-    qDebug("Save This File");
+    QString filename = QFileDialog::getSaveFileName(this, "Select file to save",
+                                             ".","Text File(*.txt *.html *.c *.cpp *.h)");
+    qDebug() << filename;
 }
 void QtEditor::saveAsFile()
 {
-    qDebug("Save As....");
+    QString filename = QFileDialog::getSaveFileName(this, "Select file to save as",
+                                             ".","Text File(*.txt *.html *.c *.cpp *.h)");
+    qDebug() << filename;
 }
 void QtEditor::printFile()
 {
@@ -214,9 +235,11 @@ QAction *QtEditor::makeAction(QString icon, QString text, \
 
 void QtEditor::alignText()
 {
-    QAction *action = qobject_cast<QAction*>(sender());
     QMdiSubWindow* subWindow = mdiArea->currentSubWindow();
     QTextEdit* textEdit = dynamic_cast<QTextEdit*>(subWindow->widget());
+
+    QAction *action = qobject_cast<QAction*>(sender());
+
     if(action->text().contains("center",Qt::CaseInsensitive))
         textEdit->setAlignment(Qt::AlignCenter);
     else if (action->text().contains("left",Qt::CaseInsensitive))
@@ -233,6 +256,7 @@ void QtEditor::editText()
     QTextEdit* textEdit = dynamic_cast<QTextEdit*>(subWindow->widget());
 
     QAction *action = qobject_cast<QAction*>(sender());
+
 
     if(action->text().contains("clear",Qt::CaseInsensitive))
         textEdit->clear();
@@ -251,3 +275,25 @@ void QtEditor::editText()
     else if (action->text().contains("zoomOut",Qt::CaseInsensitive))
         textEdit->zoomOut();
 }
+
+//void QtEditor::connectWindow(QMdiSubWindow* actWin)
+//{
+//    QTextEdit* newEdit = qobject_cast<QTextEdit*>(actWin->widget());
+//    //기존 해제
+//    if (prevEdit != nullptr)
+//    {
+//        Q_FOREACH(QAction* act, actions)
+//            act->disconnect(prevEdit);
+//    }
+//    //새로 연결
+//    const char *methods[7] = {
+//        SLOT(undo( )), SLOT(redo( )), SLOT(copy( )), SLOT(cut( )),
+//        SLOT(paste( )), SLOT(zoomIn( )), SLOT(zoomOut( ))
+//    };
+//    int cnt = 0;
+//    Q_FOREACH(QAction *action, actions) {
+//        connect(action, SIGNAL(triggered()), newEdit, methods[cnt++]);
+//    }
+
+//    prevEdit = newEdit;
+//}
