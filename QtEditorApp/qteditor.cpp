@@ -38,12 +38,12 @@ QtEditor::QtEditor(QWidget *parent)
 
 //'FILE'메뉴 및 액션 생성
     QMenu* fileMenu = menubar->addMenu("&File");
-    QAction* newAct = makeAction("new.png","&New",tr("Ctrl+N"), "Make new file", this, SLOT(newFile()));
-    QAction* openAct = makeAction("open.png","&Open",tr("Ctrl+O"), "Open new file", this, SLOT(openFile()));
-    QAction* saveAct = makeAction("save.png", "&Save", tr("Ctrl+S"), "Save this file", this, SLOT(saveFile()));
-    QAction* saveAsAct = makeAction("saveas.png", "&Save As", QKeySequence::SaveAs, "Save this file", this, SLOT(saveAsFile()));
-    QAction* printAct = makeAction("print.png", "&Print", tr("Ctrl+P"), "Print", this, SLOT(printFile()));
-    QAction* quitAct = makeAction("quit.png","&Quit",tr("Ctrl+Q"), "Quit this program", qApp, SLOT(quit()));
+    QAction* newAct = makeAction("new.png", tr("&New"),tr("Ctrl+N"), tr("Make new file"), this, SLOT(newFile()));
+    QAction* openAct = makeAction("open.png",tr("&Open"),tr("Ctrl+O"), tr("Open new file"), this, SLOT(openFile()));
+    QAction* saveAct = makeAction("save.png", tr("&Save"), tr("Ctrl+S"), tr("Save this file"), this, SLOT(saveFile()));
+    QAction* saveAsAct = makeAction("saveas.png", tr("&Save As"), QKeySequence::SaveAs, tr("Save this file"), this, SLOT(saveAsFile()));
+    QAction* printAct = makeAction("print.png", tr("&Print"), tr("Ctrl+P"), tr("Print"), this, SLOT(printFile()));
+    QAction* quitAct = makeAction("quit.png", tr("&Quit"),tr("Ctrl+Q"), tr("Quit this program"), qApp, SLOT(quit()));
 
 //'FILE'메뉴 액션 추가
     fileMenu->addAction(newAct);
@@ -57,8 +57,8 @@ QtEditor::QtEditor(QWidget *parent)
     fileMenu->addAction(quitAct);
 
 //'FileToolBar'메뉴 및 툴바 생성
-    QMenu* toolBarMenu = menubar->addMenu("&ToolBar");
-    QToolBar* fileToolBar = addToolBar("&File");
+    QMenu* toolBarMenu = menubar->addMenu(tr("&ToolBar"));
+    QToolBar* fileToolBar = addToolBar(tr("&File"));
     fileToolBar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
 //'FileToolBar'메뉴 액션 추가 (+토글액션)
@@ -75,29 +75,29 @@ QtEditor::QtEditor(QWidget *parent)
 
 //QStatusBar 클래스
     QStatusBar* statusbar = statusBar();
-    QLabel* statusLabel = new QLabel("Qt Editor", statusbar);
+    QLabel* statusLabel = new QLabel(tr("Qt Editor"), statusbar);
     statusLabel->setObjectName("Status Label");
     statusbar->addPermanentWidget(statusLabel);
     statusbar->showMessage("started",1500);
 
 //'Edit'메뉴 및 액션 생성
-    QMenu* edit = menubar->addMenu("&Edit");
-    QAction* clear= makeAction("clear.png","&Clear", tr("Ctrl+d"),
-                               "UNDO!", this, SLOT(clear()));
-    QAction* undo = makeAction("undo.png","&Undo", tr("Ctrl+z"),
-                               "UNDO!", this, SLOT(undo()));
-    QAction* redo = makeAction("redo.png","&Redo", QKeySequence::Redo,
-                               "REDO!", this, SLOT(redo()));
-    QAction* copy = makeAction("","&Copy", QKeySequence::Copy,
-                               "카피!", this, SLOT(copy()));
-    QAction* cut = makeAction("","&Cut", QKeySequence::Cut,
-                              "껐뜨!", this, SLOT(cut()));
-    QAction* paste = makeAction("","&Paste", QKeySequence::Paste,
-                                "붙여넣자!", this, SLOT(paste()));
-    QAction* zoomIn = makeAction("","&zoomIn", QKeySequence::ZoomIn,
-                                 "커져라!", this, SLOT(zoomIn()));
-    QAction* zoomOut = makeAction("","&zoomOut", QKeySequence::ZoomOut,
-                                  "작아져라!", this, SLOT(zoomOut()));
+    QMenu* edit = menubar->addMenu(tr("&Edit"));
+    QAction* clear= makeAction("clear.png",tr("&Clear"), tr("Ctrl+d"),
+                               tr("UNDO!"), this, SLOT(clear()));
+    QAction* undo = makeAction("undo.png",tr("&Undo"), tr("Ctrl+z"),
+                               tr("UNDO!"), this, SLOT(undo()));
+    QAction* redo = makeAction("redo.png",tr("&Redo"), QKeySequence::Redo,
+                               tr("REDO!"), this, SLOT(redo()));
+    QAction* copy = makeAction("",tr("&Copy"), QKeySequence::Copy,
+                               tr("Copy"), this, SLOT(copy()));
+    QAction* cut = makeAction("",tr("&Cut"), QKeySequence::Cut,
+                              tr("Cut"), this, SLOT(cut()));
+    QAction* paste = makeAction("",tr("&Paste"), QKeySequence::Paste,
+                                tr("Paste"), this, SLOT(paste()));
+    QAction* zoomIn = makeAction("",tr("&zoomIn"), QKeySequence::ZoomIn,
+                                 tr("zoomIn"), this, SLOT(zoomIn()));
+    QAction* zoomOut = makeAction("",tr("&zoomOut"), QKeySequence::ZoomOut,
+                                  tr("zoomOut"), this, SLOT(zoomOut()));
 
 //'Edit' 액션 추가
     edit->addAction(undo);
@@ -114,7 +114,7 @@ QtEditor::QtEditor(QWidget *parent)
 
 //'EditToolBar'메뉴 및 툴바 생성
     addToolBarBreak();
-    QToolBar* editToolBar = addToolBar("&Edit");
+    QToolBar* editToolBar = addToolBar(tr("&Edit"));
     fileToolBar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
 //'EditToolBar'메뉴 액션 추가 (+토글액션)
@@ -132,14 +132,14 @@ QtEditor::QtEditor(QWidget *parent)
     editToolBar->addAction(clear);
 
 //format 메뉴
-    QMenu* formatMenu = menubar->addMenu("&Format");
-    QAction* color = new QAction("&Color", this);
-    QAction* font = new QAction("&font", this);
-    QMenu* alignMenu = new QMenu("&Align",this);
-    QAction* center = new QAction("&Center", this);
-    QAction* left = new QAction("&Left", this);
-    QAction* right = new QAction("&Right", this);
-    QAction* justify = new QAction("&Justify", this);
+    QMenu* formatMenu = menubar->addMenu(tr("&Format"));
+    QAction* color = new QAction(tr("&Color"), this);
+    QAction* font = new QAction(tr("&font"), this);
+    QMenu* alignMenu = new QMenu(tr("&Align"),this);
+    QAction* center = new QAction(tr("&Center"), this);
+    QAction* left = new QAction(tr("&Left"), this);
+    QAction* right = new QAction(tr("&Right"), this);
+    QAction* justify = new QAction(tr("&Justify"), this);
     formatMenu->addAction(color);
     formatMenu->addAction(font);
     formatMenu->addMenu(alignMenu);
@@ -169,8 +169,8 @@ QtEditor::QtEditor(QWidget *parent)
 //    formatToolbar->addWidget(sizeSpinBox);
 
 //QDockWidget
-    QLabel* label = new QLabel("Dock Widget",this);
-    QDockWidget* dock = new QDockWidget("Dock Widgettttt",this);
+    QLabel* label = new QLabel(tr("Dock Widget"),this);
+    QDockWidget* dock = new QDockWidget(tr("Dock Widgettttt"),this);
     //붙일 수 있는 곳 선택 (왼쪽, 오른쪽)
     dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     //add(초기 위치 설정
@@ -179,26 +179,26 @@ QtEditor::QtEditor(QWidget *parent)
     //formatToolbar->addAction(dock->toggleViewAction());
 
 //QMessageBox 클래스
-    QMenu* help = menubar->addMenu("&Help");
-    QAction* about = help->addAction("&About");
-    QAction* aboutqt = help->addAction("&Aboutqqqqq");
+    QMenu* help = menubar->addMenu(tr("&Help"));
+    QAction* about = help->addAction(tr("&About"));
+    QAction* aboutqt = help->addAction(tr("&Aboutqqqqq"));
     connect(about, SIGNAL(triggered()), this, SLOT(aboutBox()));
     connect(aboutqt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
 //Window메뉴
-    window = menubar->addMenu("&Window");
-    QAction* nextWindow = makeAction("", "&Next Window",
-                                     "Ctrl+]", "다음 창!", mdiArea, SLOT(activateNextSubWindow()));
-    QAction* prevWindow = makeAction("", "&Prev Window",
-                                     "Ctrl+[", "이전 창!", mdiArea, SLOT(activatePreviousSubWindow()));
-    QAction* cascadeWindow = makeAction("", "&Cascade",
-                                     "", "정렬!", mdiArea, SLOT(cascadeSubWindows()));
-    QAction* closeActWindow = makeAction("", "&CloseAct",
-                                     "", "closeAct!", mdiArea, SLOT(closeActiveSubWindow()));
-    QAction* closeAllWindow = makeAction("", "&CloseAll",
-                                     "", "closeAll!", mdiArea, SLOT(closeAllSubWindows()));
-    QAction* tileWindow = makeAction("", "&CloseAct",
-                                     "", "closeAct!", mdiArea, SLOT(tileSubWindows()));
+    window = menubar->addMenu(tr("&Window"));
+    QAction* nextWindow = makeAction("", tr("&Next Window"),
+                                     "Ctrl+]", tr("Next Window"), mdiArea, SLOT(activateNextSubWindow()));
+    QAction* prevWindow = makeAction("", tr("&Prev Window"),
+                                     "Ctrl+[", tr("Prev Window"), mdiArea, SLOT(activatePreviousSubWindow()));
+    QAction* cascadeWindow = makeAction("", tr("&Cascade"),
+                                     "", tr("Cascade"), mdiArea, SLOT(cascadeSubWindows()));
+    QAction* closeActWindow = makeAction("", tr("&CloseAct"),
+                                     "", tr("CloseAct"), mdiArea, SLOT(closeActiveSubWindow()));
+    QAction* closeAllWindow = makeAction("", tr("&CloseAll"),
+                                     "", tr("CloseAll"), mdiArea, SLOT(closeAllSubWindows()));
+    QAction* tileWindow = makeAction("", tr("&CloseAct"),
+                                     "", tr("CloseAct"), mdiArea, SLOT(tileSubWindows()));
     window->addAction(nextWindow);
     window->addAction(prevWindow);
     window->addSeparator();
@@ -223,10 +223,10 @@ QtEditor::~QtEditor()
 
 void QtEditor::newFile()
 {
-    qDebug("Make New File");
+    qDebug(tr("Make New File"));
     QTextEdit* textedit = new QTextEdit;
     mdiArea->addSubWindow(textedit);
-    QAction* windowAct = new QAction("New File", this);
+    QAction* windowAct = new QAction(tr("New File"), this);
     window->addAction(windowAct);
     windowHash[windowAct] = textedit;
     connect(windowAct, SIGNAL(triggered()), SLOT(selectWindow()));
@@ -238,7 +238,7 @@ void QtEditor::newFile()
 void QtEditor::openFile()
 {
     qDebug("open File");
-    QString filename = QFileDialog::getOpenFileName(this, "Select file to open",
+    QString filename = QFileDialog::getOpenFileName(this, tr("Select file to open"),
                                              ".","Text File(*.txt *.html *.c *.cpp *.h)");
     qDebug() << filename;
 
@@ -268,7 +268,7 @@ void QtEditor::openFile()
         connect(textedit, SIGNAL(destroyed(QObject*)), SLOT(closeWindow()));
 
     } else{
-        QMessageBox::warning(this, "Error", "Can't Read this file",
+        QMessageBox::warning(this, tr("Error"), tr("Can't Read this file"),
                              QMessageBox::Ok);
     }
 }
@@ -279,7 +279,7 @@ void QtEditor::saveFile()
     QTextEdit* textedit = (QTextEdit*)mdiArea->currentSubWindow()->widget();
     QString filename = textedit->windowTitle();
     if(!filename.length()){
-        filename = QFileDialog::getSaveFileName(this, "Select file to save",
+        filename = QFileDialog::getSaveFileName(this, tr("Select file to save"),
                                                 ".","Text File(*.txt *.html *.c *.cpp *.h)");
         textedit->setWindowTitle(filename);
         windowHash.key(textedit)->setText(filename);
