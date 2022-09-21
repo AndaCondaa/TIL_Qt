@@ -2,6 +2,8 @@
 #include <QApplication>
 #include <QTextEdit>
 #include <QMenuBar>
+//예외처리 필요
+
 #include <QMenu>
 #include <QAction>
 #include <QToolBar>
@@ -20,6 +22,8 @@
 #include <QPrinter>
 #include <QPrintDialog>
 #include <QHash>
+#include <QFile>
+#include <QFileInfo>
 
 QtEditor::QtEditor(QWidget *parent)
     : QMainWindow(parent)
@@ -222,10 +226,10 @@ void QtEditor::newFile()
     qDebug("Make New File");
     QTextEdit* textedit = new QTextEdit;
     mdiArea->addSubWindow(textedit);
-    QAction* windowAct = new QAction("New Action", this);
+    QAction* windowAct = new QAction("New File", this);
     window->addAction(windowAct);
     windowHash[windowAct] = textedit;
-    connect(windowAct, SIGNAL(triggered(bool)), SLOT(selectWindow()));
+    connect(windowAct, SIGNAL(triggered()), SLOT(selectWindow()));
     connect(textedit, SIGNAL(destroyed(QObject*)), windowAct, SLOT(deleteLater()));
     connect(textedit, SIGNAL(destroyed(QObject*)), SLOT(closeWindow()));
     textedit->show();
@@ -233,22 +237,97 @@ void QtEditor::newFile()
 
 void QtEditor::openFile()
 {
+    qDebug("open File");
     QString filename = QFileDialog::getOpenFileName(this, "Select file to open",
                                              ".","Text File(*.txt *.html *.c *.cpp *.h)");
     qDebug() << filename;
+
+    QFileInfo fileInfo(filename);
+    if(fileInfo.isReadable()){
+        QFile* file = new QFile(filename);
+        file->open(QIODevice::ReadOnly);
+        QByteArray msg = file->readAll();
+        file->close();
+        delete file;
+        QTextEdit* textedit = new QTextEdit(this);
+        textedit->setWindowTitle(filename);
+
+        if(fileInfo.suffix() == "htm" || fileInfo.suffix() == "html")
+            textedit->setHtml(msg);
+        else
+            textedit->setPlainText(msg);
+
+        mdiArea->addSubWindow(textedit);
+        textedit->show();
+
+        QAction* windowAct = new QAction(filename, this);
+        window->addAction(windowAct);
+        windowHash[windowAct] = textedit;
+        connect(windowAct, SIGNAL(triggered()), SLOT(selectWindow()));
+        connect(textedit, SIGNAL(destroyed(QObject*)), windowAct, SLOT(deleteLater()));
+        connect(textedit, SIGNAL(destroyed(QObject*)), SLOT(closeWindow()));
+
+    } else{
+        QMessageBox::warning(this, "Error", "Can't Read this file",
+                             QMessageBox::Ok);
+    }
 }
+
 void QtEditor::saveFile()
 {
-    QString filename = QFileDialog::getSaveFileName(this, "Select file to save",
-                                             ".","Text File(*.txt *.html *.c *.cpp *.h)");
-    qDebug() << filename;
+    qDebug("save File");
+    QTextEdit* textedit = (QTextEdit*)mdiArea->currentSubWindow()->widget();
+    QString filename = textedit->windowTitle();
+    if(!filename.length()){
+        filename = QFileDialog::getSaveFileName(this, "Select file to save",
+                                                ".","Text File(*.txt *.html *.c *.cpp *.h)");
+        textedit->setWindowTitle(filename);
+        windowHash.key(textedit)->setText(filename);
+    }
+
+    QFile* file = new QFile(filename);
+    file->open(QIODevice::WriteOnly | QIODevice::Text);
+    QFileInfo fileInfo(filename);
+    if(fileInfo.isWritable()){
+        QByteArray msg;
+        msg.append(textedit->toHtml().toUtf8());
+        file->write(msg);
+    } else{
+        QMessageBox::warning(this, "Error", "Can't Save this File!",
+                             QMessageBox::Ok);
+    }
+
+    file->close();
+    delete file;
 }
+
 void QtEditor::saveAsFile()
 {
+    qDebug("saveAs File");
+    QTextEdit* textedit = (QTextEdit*)mdiArea->currentSubWindow()->widget();
     QString filename = QFileDialog::getSaveFileName(this, "Select file to save as",
                                              ".","Text File(*.txt *.html *.c *.cpp *.h)");
-    qDebug() << filename;
+    textedit->setWindowTitle(filename);
+    QFile* file = new QFile(filename);
+    file->open(QIODevice::WriteOnly | QIODevice::Text);
+    QFileInfo fileInfo(filename);
+    if(fileInfo.isWritable()){
+        QByteArray msg;
+        msg.append(textedit->toHtml().toUtf8());
+        file->write(msg);
+    } else{
+        QMessageBox::warning(this, "Error", "Can't Save this File!",
+                             QMessageBox::Ok);
+    }
+
+    textedit->setWindowTitle(filename);
+    windowHash.key(textedit)->setText(filename);
+    windowHash.key(textedit)->setStatusTip(filename);
+
+    file->close();
+    delete file;
 }
+
 void QtEditor::printFile()
 {
     QPrinter printer(QPrinter::HighResolution);
@@ -291,7 +370,7 @@ QAction *QtEditor::makeAction(QString icon, QString text, \
     QKeySequence keySequence(shortCut);
     act->setShortcut(keySequence);
     act->setStatusTip(toolTip);
-    connect(act, SIGNAL(triggered( )), recv, slot);
+    connect(act, SIGNAL(triggered()), recv, slot);
     return act;
 }
 
@@ -337,8 +416,11 @@ void QtEditor::setFont()
 //Edit 함수
 void QtEditor::undo()
 {
-    QTextEdit* textedit = (QTextEdit*)mdiArea->currentSubWindow()->widget();
-    textedit->undo();
+    QMdiSubWindow* subWindow = mdiArea->currentSubWindow();
+    if(!(subWindow == nullptr)){
+        QTextEdit* textedit = (QTextEdit*)subWindow->widget();
+        textedit->undo();
+    }
 }
 void QtEditor::redo()
 {
