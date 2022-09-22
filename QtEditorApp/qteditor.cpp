@@ -24,6 +24,8 @@
 #include <QHash>
 #include <QFile>
 #include <QFileInfo>
+#include <QKeyEvent>
+#include <QDebug>
 
 QtEditor::QtEditor(QWidget *parent)
     : QMainWindow(parent)
@@ -223,7 +225,7 @@ QtEditor::~QtEditor()
 
 void QtEditor::newFile()
 {
-    qDebug(tr("Make New File"));
+    qDebug("Make New File");
     QTextEdit* textedit = new QTextEdit;
     mdiArea->addSubWindow(textedit);
     QAction* windowAct = new QAction(tr("New File"), this);
@@ -232,6 +234,7 @@ void QtEditor::newFile()
     connect(windowAct, SIGNAL(triggered()), SLOT(selectWindow()));
     connect(textedit, SIGNAL(destroyed(QObject*)), windowAct, SLOT(deleteLater()));
     connect(textedit, SIGNAL(destroyed(QObject*)), SLOT(closeWindow()));
+    textedit->installEventFilter(this);
     textedit->show();
 }
 
@@ -480,3 +483,17 @@ void QtEditor::closeWindow()
     window->removeAction(windowHash.key(textedit));
     delete windowHash.key(textedit);
 }
+
+//이벤트 필터
+bool QtEditor::eventFilter(QObject* obj, QEvent* event)
+{
+    if(event->type() == QEvent::KeyPress){
+        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+        qDebug("Key Press %d", keyEvent->key());
+        return true;
+    } else {
+        return QObject::eventFilter(obj, event);
+    }
+}
+
+

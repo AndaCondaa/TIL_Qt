@@ -62,5 +62,7 @@ private:
     template <typename T, typename Functor>
     QAction* makeAction(QString icon, QString text, T shortCut,
                         QString toolTip, Functor lambda);
+
+    bool eventFilter(QObject*, QEvent*);
 };
 #endif // QTEDITOR_H
