@@ -1,7 +1,6 @@
 #ifndef WIDGET_H
 #define WIDGET_H
 
-#include <QWidget>
 #include <QLabel>
 
 class Widget : public QLabel
@@ -12,9 +11,8 @@ public:
     Widget(QWidget *parent = nullptr);
     ~Widget();
 
-protected:
-    void moveEvent(QMoveEvent*);
-    void closeEvent(QCloseEvent*);
-    void timerEvent(QTimerEvent*);
+public slots:
+    void displayClock();
+
 };
 #endif // WIDGET_H

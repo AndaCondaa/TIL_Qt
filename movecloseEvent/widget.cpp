@@ -6,8 +6,11 @@
 Widget::Widget(QWidget *parent)
     : QLabel(parent)
 {
-    setText(tr("Hello World"));
+    setText("Timer");
     resize(100,30);
+
+    int id1 = startTimer(3000);
+    int id2 = startTimer(1000);
 }
 
 Widget::~Widget()
@@ -21,5 +24,10 @@ void Widget::moveEvent(QMoveEvent*)
 
 void Widget::closeEvent(QCloseEvent* event)
 {
-    event->ignore();        //accept();
+    event->accept();        //ignore();
+}
+
+void Widget::timerEvent(QTimerEvent* event)
+{
+    setText(QString::number(event->timerId()));
 }
