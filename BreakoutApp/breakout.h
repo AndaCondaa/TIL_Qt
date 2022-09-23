@@ -16,17 +16,25 @@ public:
     Breakout(QWidget *parent = nullptr);
     ~Breakout();
 
+protected:
+    void keyPressEvent(QKeyEvent*);
+    void mouseMoveEvent(QMouseEvent*);
+    void timerEvent(QTimerEvent*);
+    void moveObjects();
+    void checkCollision();
+
+    static const int MOVE_SPEED = 10;
+
 private:
     static const int NO_OF_BRICKS = 30;
 
     QLabel* ball;
     QLabel* paddle;
     QLabel* bricks[NO_OF_BRICKS];
+    int score_check = 0;
+    QString score;
 
-protected:
-    void keyPressEvent(QKeyEvent*);
-    void mouseMoveEvent(QMouseEvent*);
-
-    static const int MOVE_SPEED = 20;
+    int timerId;
+    int xDir, yDir;
 };
 #endif // BREAKOUT_H
