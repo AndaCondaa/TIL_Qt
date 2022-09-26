@@ -1,7 +1,10 @@
 #include "breakout.h"
-
+#include <QString>
 #include <QLabel>
 #include <QApplication>
+#include <QAudioOutput>
+#include <QMediaPlayer>
+#include <QFileInfo>
 
 #define WIDTH 50
 #define HEIGHT 12
@@ -31,7 +34,36 @@ Breakout::Breakout(QWidget *parent)
 
     setMouseTracking(true);
 
-    timerId = startTimer(3);               //QObject의 타이머를 시작
+    timerId = startTimer(6);               //QObject의 타이머를 시작
+
+    //점수 표시
+    score = new QLabel("0", this);
+    score->setGeometry(150, 200, 100, 50);
+    score->setAlignment(Qt::AlignHCenter);
+
+    /* 사운드 출력을 위한 미디어 플레이어의 초기화 */
+    QAudioOutput *bgAudioOutput = new QAudioOutput;
+    bgAudioOutput->setVolume(0.6);
+    bgPlayer = new QMediaPlayer( );
+    bgPlayer->setAudioOutput(bgAudioOutput);
+    bgPlayer->setLoops(QMediaPlayer::Infinite);         /* 무한 반복 */
+    bgPlayer->setSource(QUrl::fromLocalFile(QFileInfo("background.mp3").absoluteFilePath( )));
+    bgPlayer->play( );
+
+    /* 효과음 출력을 위한 플레이어 */
+    QAudioOutput *bgEffectOutput = new QAudioOutput;
+    bgEffectOutput->setVolume(100);
+    effectPlayer = new QMediaPlayer( );
+    effectPlayer->setAudioOutput(bgEffectOutput);
+    effectPlayer->setLoops(QMediaPlayer::Once);
+    effectPlayer->setSource(QUrl::fromLocalFile(QFileInfo("effect.wav").absoluteFilePath( )));
+
+    QAudioOutput *dieEffect = new QAudioOutput;
+    dieEffect->setVolume(70);
+    diePlayer = new QMediaPlayer( );
+    diePlayer->setAudioOutput(dieEffect);
+    diePlayer->setLoops(QMediaPlayer::Once);
+    diePlayer->setSource(QUrl::fromLocalFile(QFileInfo("die.wav").absoluteFilePath( )));
 
 }
 
@@ -95,6 +127,9 @@ void Breakout::checkCollision()
     if(ball->geometry().bottom()>height()){
         killTimer(timerId);
         qDebug("Game lost");
+        score->setText("낄낄낄낄낄낄낄");
+        diePlayer->play();
+        bgPlayer->stop();
     }
 
     //남은 블록이 없으면 게임 종료
@@ -105,6 +140,7 @@ void Breakout::checkCollision()
     if(j==NO_OF_BRICKS){
         killTimer(timerId);
         qDebug("Victory");
+        score->setText("Victory");
     }
 
     if((ball->geometry()).intersects(paddle->geometry())){
@@ -139,6 +175,10 @@ void Breakout::checkCollision()
                 if(bricks[i]->geometry().contains(pointTop)) yDir = 1;
                     else if(bricks[i]->geometry().contains(pointBottom)) yDir = -1;
                 bricks[i]->setHidden(true);
+                score_check += 70;
+                score->setText(QString::number(score_check));
+                //effectPlayer->stop();
+                effectPlayer->play();
             }
         }
     }

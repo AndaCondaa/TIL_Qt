@@ -6,7 +6,7 @@
 #include <QKeyEvent>
 
 class QLabel;
-
+class QMediaPlayer;
 
 class Breakout : public QWidget
 {
@@ -31,8 +31,12 @@ private:
     QLabel* ball;
     QLabel* paddle;
     QLabel* bricks[NO_OF_BRICKS];
+    QLabel* score;
     int score_check = 0;
-    QString score;
+    QMediaPlayer* bgPlayer;
+    QMediaPlayer* effectPlayer;
+    QMediaPlayer* diePlayer;
+
 
     int timerId;
     int xDir, yDir;
