@@ -6,6 +6,8 @@
 class QCamera;
 class QImageCapture;
 class QMediaRecorder;
+class QVideoFrame;
+class QMediaCaptureSession;
 
 class Widget : public QWidget
 {
@@ -16,12 +18,13 @@ public:
     ~Widget();
 
 private:
-    QCamera *camera;
-    QImageCapture *imageCapture;
-    QMediaRecorder *recorder;
+    QCamera* camera;
+    QImageCapture* imageCapture;
+    QMediaRecorder* recorder;
+    QMediaCaptureSession* captureSession;
 
-public slots:
-    void captureImage();
-    void recordVideo();
+private slots:
+    void captureImage( );
+    void recordVideo(bool);
 };
 #endif // WIDGET_H
