@@ -4,7 +4,7 @@
 CustomButton::CustomButton(QWidget *parent)
     : QWidget(parent), m_isEntered(false), m_isHighlighted(false)
 {
-    resize(130,30);
+    resize(500,300);
 }
 
 void CustomButton::paintEvent(QPaintEvent*)
@@ -40,11 +40,16 @@ void CustomButton::leaveEvent(QEvent*)
     repaint();
 }
 
-//버틍을 누르면 clicked() 시그널 발생
+//버튼을 누르면 clicked() 시그널 발생
 void CustomButton::mousePressEvent(QMouseEvent*)
 {
     //m_isEntered = false;
     m_isHighlighted = true;
     update();
     emit clicked();
+}
+
+void CustomButton::mouseReleaseEvent(QMouseEvent*)
+{
+    emit released();
 }

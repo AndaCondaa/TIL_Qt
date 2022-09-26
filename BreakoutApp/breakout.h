@@ -1,6 +1,10 @@
 #ifndef BREAKOUT_H
 #define BREAKOUT_H
 
+#include "ball.h"
+#include "brick.h"
+#include "paddle.h"
+
 #include <QWidget>
 #include <QMouseEvent>
 #include <QKeyEvent>
@@ -23,14 +27,17 @@ protected:
     void moveObjects();
     void checkCollision();
 
-    static const int MOVE_SPEED = 10;
+    static const int MOVE_SPEED = 1;
 
 private:
     static const int NO_OF_BRICKS = 30;
 
-    QLabel* ball;
-    QLabel* paddle;
-    QLabel* bricks[NO_OF_BRICKS];
+//    QLabel* ball;
+//    QLabel* paddle;
+//    QLabel* bricks[NO_OF_BRICKS];
+    Ball* ball;
+    Paddle* paddle;
+    Brick* bricks[NO_OF_BRICKS];
     QLabel* score;
     int score_check = 0;
     QMediaPlayer* bgPlayer;

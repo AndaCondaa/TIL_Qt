@@ -1,12 +1,11 @@
-#include "custombutton.h"
+#include "widget.h"
 
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    CustomButton w;
-    QObject::connect(&w, SIGNAL(released()),&a, SLOT(quit()));
+    Widget w;
     w.show();
     return a.exec();
 }
