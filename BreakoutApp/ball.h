@@ -1,13 +1,15 @@
 #ifndef BALL_H
 #define BALL_H
 
-#include <QLabel>
+#include <QWidget>
 
-class Ball : public QLabel
+class Ball : public QWidget
 {
     Q_OBJECT
 public:
     explicit Ball(QWidget *parent = nullptr);
+private:
+    void paintEvent(QPaintEvent *e);
 };
 
 #endif // BALL_H

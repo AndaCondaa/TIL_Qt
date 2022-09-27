@@ -1,13 +1,15 @@
 #ifndef PADDLE_H
 #define PADDLE_H
 
-#include <QLabel>
+#include <QWidget>
 
-class Paddle : public QLabel
+class Paddle : public QWidget
 {
     Q_OBJECT
 public:
     explicit Paddle(QWidget *parent = nullptr);
+private:
+    void paintEvent(QPaintEvent *e);
 };
 
 #endif // PADDLE_H

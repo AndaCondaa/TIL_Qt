@@ -1,13 +1,15 @@
 #ifndef BRICK_H
 #define BRICK_H
 
-#include <QLabel>
+#include <QWidget>
 
-class Brick : public QLabel
+class Brick : public QWidget
 {
     Q_OBJECT
 public:
     explicit Brick(QWidget *parent = nullptr);
+private:
+    void paintEvent(QPaintEvent *e);
 };
 
 #endif // BRICK_H
