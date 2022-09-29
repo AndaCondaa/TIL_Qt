@@ -31,6 +31,6 @@ private:
 public slots:
     void setPaintColor();
     void setPaintSize(int);
-    //    void saveImage();
+    void saveImage();
 };
 #endif // SCRATCHPAD_H

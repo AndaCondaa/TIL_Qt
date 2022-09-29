@@ -21,13 +21,16 @@ MainWindow::MainWindow(QWidget *parent)
 //툴바 생성
     QToolBar* toolBar = addToolBar(tr("&tool"));
     toolBar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    QAction* Color = new QAction("&Color", this);
-    toolBar->addAction(Color);
+    QAction* color = new QAction("&Color", this);
+    toolBar->addAction(color);
     QSpinBox* sizeSpin = new QSpinBox(this);
     toolBar->addWidget(sizeSpin);
+    QAction* save = new QAction("&Save",this);
+    toolBar->addAction(save);
 
-    connect(Color, SIGNAL(triggered(bool)), m_scratchPad, SLOT(setPaintColor()));
+    connect(color, SIGNAL(triggered(bool)), m_scratchPad, SLOT(setPaintColor()));
     connect(sizeSpin, SIGNAL(valueChanged(int)), m_scratchPad, SLOT(setPaintSize(int)));
+    connect(save, SIGNAL(triggered(bool)), m_scratchPad, SLOT(saveImage()));
 }
 
 MainWindow::~MainWindow()

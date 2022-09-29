@@ -103,3 +103,11 @@ void ScratchPad::setPaintSize(int size)
 {
     paintSize = size;
 }
+
+void ScratchPad::saveImage()
+{
+    QString filename =
+            QDateTime::currentDateTime().toString("yyyy MMddHHmmss") + ".png";
+    image.save(filename);
+}
+
