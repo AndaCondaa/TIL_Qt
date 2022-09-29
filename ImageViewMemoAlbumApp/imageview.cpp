@@ -61,7 +61,7 @@ void ImageView::wheelEvent(QWheelEvent *event){
     QTimeLine *anim = new QTimeLine(350, this);
     anim->setUpdateInterval(20);
 
-    connect(anim, SIGNAL(valuechanged(qreal)), SLOT(scalingTime(qreal)));
+    connect(anim, SIGNAL(valueChanged(qreal)), SLOT(scalingTime(qreal)));
     connect(anim, SIGNAL(finished()), SLOT(animFinished()));
     anim->start();
 }
