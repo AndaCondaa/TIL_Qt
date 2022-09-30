@@ -1,4 +1,4 @@
-#include "paddle.h"
+  #include "paddle.h"
 #include <QPainter>
 
 #define WIDTH 50

@@ -9,17 +9,22 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    clientitem.cpp \
     clientmanagerform.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    productmanagerform.cpp
 
 HEADERS += \
+    clientitem.h \
     clientmanagerform.h \
-    mainwindow.h
+    mainwindow.h \
+    productmanagerform.h
 
 FORMS += \
     clientmanagerform.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    productmanagerform.ui
 
 TRANSLATIONS += \
     CSApp_ko_KR.ts

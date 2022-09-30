@@ -10,7 +10,7 @@ Ball::Ball(QWidget *parent)
     setStyleSheet("background-color:rgba(0,0,0,0)");
 }
 
-void Ball::paintEvent(QPaintEvent *e)
+void Ball::paintEvent(QPaintEvent* e)
 {
     Q_UNUSED(e);
 

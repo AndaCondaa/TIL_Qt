@@ -47,7 +47,7 @@ Breakout::Breakout(QWidget *parent)
     bgPlayer = new QMediaPlayer( );
     bgPlayer->setAudioOutput(bgAudioOutput);
     bgPlayer->setLoops(QMediaPlayer::Infinite);         /* 무한 반복 */
-    bgPlayer->setSource(QUrl::fromLocalFile(QFileInfo("background.mp3").absoluteFilePath( )));
+    bgPlayer->setSource(QUrl::fromLocalFile(QFileInfo("background.mp3").absoluteFilePath()));
     bgPlayer->play( );
 
     /* 효과음 출력을 위한 플레이어 */
