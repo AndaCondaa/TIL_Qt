@@ -3,8 +3,8 @@
 PendulumController::PendulumController(QGraphicsItem* pendulum, QObject *parent)
     : QObject{parent}, m_pendulum(pendulum)
 {
-    m_timeline.setFrameRange(-180, 180);
-    m_timeline.setEasingCurve(QEasingCurve::InOutElastic);
+    m_timeline.setFrameRange(-90, 90);
+    m_timeline.setEasingCurve(QEasingCurve::InOutQuad);
     m_timeline.setDuration(1000);
     m_timeline.setUpdateInterval(16);   //초당 60 프레임 이상 : 기본값은 40(초당 25번)
     connect(&m_timeline, SIGNAL(frameChanged(int)), SLOT(slotRotateItem(int)));

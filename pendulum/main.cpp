@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     scene->addItem(pendulum);
     PendulumController controller(pendulum);
     view->setRenderHint(QPainter::Antialiasing);
-    //view->setSceneRect(-150, -20, 300, 200);
+    view->setSceneRect(-150, -20, 300, 200);    //중간에 씬을 두려고 함, 그래서 씬 위치 고정
     view->resize(320, 240);
     view->show();
 
