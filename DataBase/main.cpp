@@ -6,11 +6,12 @@
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlQuery>
+#include <QSqlTableModel>
 
 static bool createConnection()
 {
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName(":memory:");
+    db.setDatabaseName("DATABASE");
     if (!db.open()) return false;
 
     QSqlQuery query;
@@ -31,8 +32,15 @@ int main(int argc, char *argv[])
 
     if (!createConnection()) return 1;
 
-    QSqlQueryModel queryModel;
-    queryModel.setQuery("select * from person");
+//    QSqlQueryModel queryModel;
+//    queryModel.setQuery("select * from person");
+
+    QSqlTableModel queryModel;
+    queryModel.setTable("person");
+//    queryModel.setEditStrategy(QSqlTableModel::OnManualSubmit);
+    queryModel.select();
+
+
     queryModel.setHeaderData(0, Qt::Horizontal, QObject::tr("ID"));
     queryModel.setHeaderData(1, Qt::Horizontal, QObject::tr("First name"));
     queryModel.setHeaderData(2, Qt::Horizontal, QObject::tr("Last name"));
@@ -41,6 +49,7 @@ int main(int argc, char *argv[])
     tableview->setModel(&queryModel);
     tableview->setWindowTitle(QObject::tr("Query Model"));
     tableview->show();
+
 
     return app.exec();
 
