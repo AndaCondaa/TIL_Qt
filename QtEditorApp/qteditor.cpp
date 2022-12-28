@@ -513,9 +513,10 @@ void QtEditor::readSettings()
     QSettings settings("QtEdito.ini", QSettings::IniFormat);
     settings.beginGroup("QtEditor");
     resize(settings.value("size", QSize(400, 400)).toSize());
-    move(settings.value("pos"), QPoint(200, 200)).toPoint();
+    move(settings.value("pos", QPoint(200, 200)).toPoint());
 
     if (settings.value("fullScreen").toBool())
-        setWindowState(windowState()^Qt::WindowFullScreen);
+        showMaximized();
+        //setWindowState(windowState()^Qt::WindowFullScreen);
     settings.endGroup();
 }
