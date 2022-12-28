@@ -1,11 +1,12 @@
-#include "widget.h"
+
+#include "domreader.h"
 
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    Widget w;
-    w.show();
+    DOMReader d;
+    d.show();
     return a.exec();
 }

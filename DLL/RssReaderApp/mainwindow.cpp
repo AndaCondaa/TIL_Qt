@@ -3,6 +3,9 @@
 
 #include <QtWidgets>
 #include <QSettings>
+#include <QDomDocument>
+#include <QDomNodeList>
+
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     QToolBar *toolbar = addToolBar(tr("Open"));
@@ -21,6 +24,17 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     act->setIcon(style( )->standardIcon(QStyle::SP_BrowserReload));
     connect(act, SIGNAL(triggered( )), SLOT(openRssFeed( )));
     toolbar->addAction(act);
+
+    /* RSS 목록이 표시될 QListView 위젯 */
+    tv = new QListView;
+    connect(tv, SIGNAL(doubleClicked(QmodelIndex)), SLOT(listViewDoubleClicked(QModelIndex)));
+    model = new QStandardItemModel(0, 1, this);
+    tv->setModel(model);
+
+    /* 중앙 위젯 설정 */
+    QSplitter *splitter = new QSplitter;
+    splitter->addWidget(tv);
+    this->setCentralWidget(splitter);
 
     /* 동적 라이브러리의 사용 */
     QLibrary lib("SaveUrls");
@@ -98,7 +112,47 @@ void MainWindow::openRssFeed( )
 void MainWindow::replyFinished(QNetworkReply *netReply)
 {
     QString str(netReply->readAll( ));
-    qDebug("%s", qPrintable(str));
+
+    /* 리다이렉트가 되면 다시 연결 */
+    QVariant vt = netReply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+    if (!vt.isNull()) {
+        qDebug() << "Redirected to:" << vt.toUrl().toString();
+        QNetworkReply* reply = manager->get(QNetworkRequest(vt.toUrl()));
+        connect(reply, SIGNAL(downloadProgress(qint64,qint64)), SLOT(downloadProgress(qint64,qint64)));
+    } else {
+        /* XML 파싱 */
+        QDomDocument doc;
+        QString error;
+        if (!doc.setContent(str, false, &error)) {
+            qDebug("Error");
+        } else {
+            QDomElement docElem = doc.documentElement();
+            QDomNodeList nodeList = docElem.elementsByTagName("item");
+
+            model->clear();
+            model->insertColumn(0);
+            for (int i = 0; i < nodeList.length(); i++) {
+                QDomNode node = nodeList.item(i);
+                QDomElement e = node.toElement();
+                QString strTitle =
+                        e.elementsByTagName("title").item(0).firstChild().nodeValue();
+                QString strLink =
+                        e.elementsByTagName("link").item(0).firstChild().nodeValue();
+                QString strDescription =
+                        e.elementsByTagName("description").item(0).firstChild().nodeValue();
+                QString strToolTip = "<b>" + strTitle + "</b>" + "<br/><br/>" +
+                        strDescription + "<br/><br/>" + strLink;
+                model->insertRows(model->rowCount(), 1);
+                QModelIndex index = model->index(model->rowCount() - 1, 0);
+                model->setData(index, strTitle, Qt::DisplayRole);
+                model->setData(index, style()->standardIcon(QStyle::SP_FileIcon), Qt::DecorationRole);
+                model->setData(index, strToolTip, Qt::ToolTipRole);
+                model->setData(index, strLink, Qt::UserRole);
+                model->itemFromIndex(index)->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+            }
+        }
+    }
+
 }
 
 /* QListView에서 삭제 키 사용 설정 */
@@ -113,4 +167,9 @@ void ListView::keyPressEvent(QKeyEvent *event)
     } else {
         QListView::keyPressEvent(event);
     }
+}
+
+void MainWindow::listViewDoubleClicked(const QModelIndex &index)
+{
+    qDebug("listViewDoubleClicked");
 }

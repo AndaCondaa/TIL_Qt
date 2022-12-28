@@ -5,6 +5,8 @@
 #include <QComboBox>
 #include <QNetworkReply>
 #include <QListView>
+#include <QStandardItemModel>
+
 /* ~ 중간 표시 생략 ~ */
 
 class MainWindow : public QMainWindow
@@ -18,8 +20,11 @@ public:
 public slots:
     void openRssFeed( );
     void replyFinished(QNetworkReply*);
+    void listViewDoubleClicked(const QModelIndex &index);
 
 private:
+    QListView *tv;
+    QStandardItemModel *model;
     QComboBox *combo;
     QNetworkAccessManager *manager;
 };
