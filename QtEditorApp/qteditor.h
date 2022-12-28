@@ -49,6 +49,9 @@ public slots:
     void selectWindow();
     void closeWindow();
 
+    void writeSettings();
+    void readSettings();
+
 private:
     QLabel* statusLabel;
     QMdiArea* mdiArea;

@@ -2,6 +2,8 @@
 #include <QApplication>
 #include <QTextEdit>
 #include <QMenuBar>
+#include <QSettings>
+#include <QCryptographicHash>
 //예외처리 필요
 
 #include <QMenu>
@@ -496,4 +498,24 @@ bool QtEditor::eventFilter(QObject* obj, QEvent* event)
     }
 }
 
+void QtEditor::writeSettings()
+{
+    QSettings settings("QtEditor.ini", QSettings::IniFormat);
+    settings.beginGroup("QtEditor");
+    settings.setValue("size", size());
+    settings.setValue("pos", pos());
+    settings.setValue("fllScreen", isFullScreen());
+    settings.endGroup();
+}
 
+void QtEditor::readSettings()
+{
+    QSettings settings("QtEdito.ini", QSettings::IniFormat);
+    settings.beginGroup("QtEditor");
+    resize(settings.value("size", QSize(400, 400)).toSize());
+    move(settings.value("pos"), QPoint(200, 200)).toPoint();
+
+    if (settings.value("fullScreen").toBool())
+        setWindowState(windowState()^Qt::WindowFullScreen);
+    settings.endGroup();
+}
