@@ -31,9 +31,19 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     model = new QStandardItemModel(0, 1, this);
     tv->setModel(model);
 
+    /* RSS 피드 다운로드와 웹 페이지 표시를 위한 프로그래스바 */
+    progress = new QProgressBar(this);
+    statusBar()->addPermanentWidget(progress);
+
+    /* 웹 기반의 내용 표시 */
+    wv = new QWebEngineView(this);
+    wv->load(QUrl("about:blank"));
+    connect(wv,SIGNAL(loadProgress(int)), progress, SLOT(setValue(int)));
+
     /* 중앙 위젯 설정 */
     QSplitter *splitter = new QSplitter;
     splitter->addWidget(tv);
+    splitter->addWidget(wv);
     this->setCentralWidget(splitter);
 
     /* 동적 라이브러리의 사용 */
@@ -107,6 +117,9 @@ void MainWindow::openRssFeed( )
 
     /*  RSS 사이트 접속 */
     manager->get(QNetworkRequest(QUrl(combo->currentText( ))));
+
+    QNetworkReply *reply = manager->get(QNetworkRequest(QUrl(combo->currentText())));
+    connect(reply, SIGNAL(downloadProgress(qint64, qint64)), SLOT(downloadProgress(qint64, qint64)));
 }
 
 void MainWindow::replyFinished(QNetworkReply *netReply)
@@ -124,7 +137,7 @@ void MainWindow::replyFinished(QNetworkReply *netReply)
         QDomDocument doc;
         QString error;
         if (!doc.setContent(str, false, &error)) {
-            qDebug("Error");
+            wv->setHtml(QString("<h1>Error</h1>") + error);
         } else {
             QDomElement docElem = doc.documentElement();
             QDomNodeList nodeList = docElem.elementsByTagName("item");
@@ -171,5 +184,21 @@ void ListView::keyPressEvent(QKeyEvent *event)
 
 void MainWindow::listViewDoubleClicked(const QModelIndex &index)
 {
-    qDebug("listViewDoubleClicked");
+    /* 웹뷰에 내용 표시 */
+    QString strLink = index.data(Qt::UserRole).toString();
+    qDebug() << "double click";
+    wv->load(QUrl(strLink));
+}
+
+void MainWindow::downloadProgress(qint64 bytes, qint64 bytesTotal)
+{
+    if (bytesTotal == -1) {
+        /* 진행 관련 정보 설정 */
+        progress->setMinimum(0);
+        progress->setMaximum(0);
+    } else {
+        progress->setMaximum(100);
+        int percent = bytes * 100 / bytesTotal;
+        progress->setValue(percent);
+    }
 }
