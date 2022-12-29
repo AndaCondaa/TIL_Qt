@@ -47,7 +47,7 @@ void sendRequest()
 #if 1
             foreach(const QString& key, jsonObj.keys()) {
                 QJsonValue value = jsonObj.value(key);
-                qDebug() << "Key = " << key << ", Value = " << value.toInt();
+                qDebug() << "Key = " << key << ", Value = " << value.toString();
             }
 #else
             qDebug( ) << "Name:" << jsonObj["name"].toString( );
