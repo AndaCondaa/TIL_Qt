@@ -15,9 +15,9 @@ private slots:
     void init();
     void cleanup();
     void cleanupTestCase();
-
     void bark();
     void rollover();
+    void simple();
 };
 
 #endif // DOG_H
